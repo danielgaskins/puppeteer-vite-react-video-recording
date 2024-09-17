@@ -8,9 +8,10 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
     const video = videoRef.current;
 
     const handleTimeUpdate = () => {
-      const currentTime = totalPlayTime + video.currentTime * 1000;
+      console.log(totalPlayTime)
+      const currentTime = totalPlayTime + (video.currentTime -startTime) * 1000;
       const currentCaption = captions.find(
-        caption => currentTime >= caption.startTime && currentTime <= caption.endTime
+        caption => (currentTime/1000) >= caption.startTime && (currentTime/1000) <= caption.endTime
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
