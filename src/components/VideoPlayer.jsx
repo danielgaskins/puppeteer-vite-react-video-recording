@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, startTime }) => {
+const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, onVideoStart, startTime, videoStartTime }) => {
   const videoRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
 
@@ -8,13 +8,15 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
     const video = videoRef.current;
 
     const handleTimeUpdate = () => {
-      const currentTime = elapsedTime;
+      if (!videoStartTime) return;
+
+      const currentTime = (Date.now() - videoStartTime) / 1000; // Calculate time since video started
       const currentCaption = captions.find(
         caption => currentTime >= caption.startTime && currentTime <= caption.endTime
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
-      if ((video.currentTime - startTime >= clipLength / 1000) || ((video.currentTime - startTime) < -0.5)) {
+      if (currentTime >= clipLength / 1000) {
         video.pause();
         onVideoEnd();
       }
@@ -27,13 +29,18 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('ended', onVideoEnd);
     };
-  }, [captions, clipLength, elapsedTime, onVideoEnd, startTime]);
+  }, [captions, clipLength, onVideoEnd, videoStartTime]);
 
   useEffect(() => {
     const video = videoRef.current;
     video.load();
     video.currentTime = startTime;
-  }, [videoUrl, startTime]);
+    video.play().then(() => {
+      onVideoStart(); // Call onVideoStart when the video actually starts playing
+    }).catch(error => {
+      console.error('Error playing video:', error);
+    });
+  }, [videoUrl, startTime, onVideoStart]);
 
   return (
     <div className="relative w-full h-screen">
@@ -41,7 +48,6 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
         ref={videoRef}
         src={videoUrl}
         className="w-full h-full object-cover"
-        autoPlay
         muted
       />
       <div className="absolute bottom-10 left-0 right-0 text-center">

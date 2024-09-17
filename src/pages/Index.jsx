@@ -49,6 +49,7 @@ const Index = () => {
   const [selectedVideo, setSelectedVideo] = useState('');
   const [startTime, setStartTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [videoStartTime, setVideoStartTime] = useState(null);
 
   useEffect(() => {
     const { captions: parsedCaptions, clipLengthInSeconds } = parseUrlParams(searchParams);
@@ -81,6 +82,11 @@ const Index = () => {
 
   const handleVideoEnd = () => {
     selectRandomVideoAndTime();
+    setVideoStartTime(null); // Reset video start time for the next video
+  };
+
+  const handleVideoStart = () => {
+    setVideoStartTime(Date.now()); // Log the actual start time of the video
   };
 
   return (
@@ -92,7 +98,9 @@ const Index = () => {
           clipLength={clipLength}
           elapsedTime={elapsedTime}
           onVideoEnd={handleVideoEnd}
+          onVideoStart={handleVideoStart}
           startTime={startTime}
+          videoStartTime={videoStartTime}
         />
       ) : (
         <p className="text-center text-white">Loading...</p>
