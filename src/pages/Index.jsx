@@ -92,6 +92,7 @@ const Index = () => {
   const [selectedVideo, setSelectedVideo] = useState('');
   const [selectedMusic, setSelectedMusic] = useState('');
   const [totalPlayTime, setTotalPlayTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const { captions: parsedCaptions, clipLengthInSeconds } = parseUrlParams(searchParams);
@@ -110,8 +111,17 @@ const Index = () => {
     selectRandomMedia();
   };
 
+  const handleScreenClick = () => {
+    if (!isPlaying) {
+      setIsPlaying(true);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div 
+      className="min-h-screen flex items-center justify-center bg-black cursor-pointer"
+      onClick={handleScreenClick}
+    >
       {selectedVideo && selectedMusic ? (
         <VideoPlayer
           videoUrl={selectedVideo}
@@ -120,9 +130,15 @@ const Index = () => {
           clipLength={clipLength}
           totalPlayTime={totalPlayTime}
           onVideoEnd={handleVideoEnd}
+          isPlaying={isPlaying}
         />
       ) : (
         <p className="text-center text-white">Loading...</p>
+      )}
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <p className="text-white text-2xl">Click anywhere to start</p>
+        </div>
       )}
     </div>
   );

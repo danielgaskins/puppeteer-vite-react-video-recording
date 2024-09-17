@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, onVideoEnd }) => {
+const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, onVideoEnd, isPlaying }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
@@ -39,23 +39,22 @@ const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, 
     video.load();
     audio.load();
 
-    const playMedia = () => {
+    if (isPlaying) {
       video.play().catch(error => console.error('Error playing video:', error));
       audio.play().catch(error => console.error('Error playing audio:', error));
-    };
-
-    playMedia();
-  }, [videoUrl, audioUrl]);
+    } else {
+      video.pause();
+      audio.pause();
+    }
+  }, [videoUrl, audioUrl, isPlaying]);
 
   return (
     <div className="relative w-full h-screen">
       <video
         ref={videoRef}
         src={videoUrl}
-        style={{maxHeight:"100%", maxWidth: "100%"}}
         className="w-full h-full object-cover"
-        autoPlay
-        muted="muted"
+        muted
       />
       <audio ref={audioRef} src={audioUrl} />
       <div className="absolute bottom-10 left-0 right-0 text-center">
