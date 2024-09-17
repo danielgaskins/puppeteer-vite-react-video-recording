@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, onVideoEnd, isPlaying }) => {
+const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, onVideoEnd }) => {
   const videoRef = useRef(null);
-  const audioRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
 
   useEffect(() => {
     const video = videoRef.current;
-    const audio = audioRef.current;
 
     const handleTimeUpdate = () => {
       const currentTime = totalPlayTime + video.currentTime;
@@ -18,7 +16,6 @@ const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, 
 
       if (video.currentTime >= clipLength) {
         video.pause();
-        audio.pause();
         onVideoEnd();
       }
     };
@@ -34,34 +31,26 @@ const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, 
 
   useEffect(() => {
     const video = videoRef.current;
-    const audio = audioRef.current;
 
     video.load();
-    audio.load();
 
-    if (isPlaying) {
+    const playMedia = () => {
       video.play().catch(error => console.error('Error playing video:', error));
-      audio.play().catch(error => console.error('Error playing audio:', error));
-    } else {
-      video.pause();
-      audio.pause();
-    }
-  }, [videoUrl, audioUrl, isPlaying]);
+    };
+
+    playMedia();
+  }, [videoUrl, audioUrl]);
 
   return (
     <div className="relative w-full h-screen">
       <video
         ref={videoRef}
         src={videoUrl}
+        style={{maxHeight:"100%", maxWidth: "100%"}}
         className="w-full h-full object-cover"
-        muted
+        autoPlay
+        muted="muted"
       />
-      <audio ref={audioRef} src={audioUrl} />
-      <div className="absolute bottom-10 left-0 right-0 text-center">
-        <p className="text-white text-2xl font-bold bg-black bg-opacity-50 p-4 inline-block rounded">
-          {currentCaption}
-        </p>
-      </div>
     </div>
   );
 };
