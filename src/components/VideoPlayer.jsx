@@ -14,7 +14,7 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
-      if (video.currentTime - startTime >= clipLength / 1000) {
+      if ((video.currentTime - startTime >= clipLength / 1000) || ((video.currentTime - startTime) < -0.5)) {
         video.pause();
         onVideoEnd();
       }
