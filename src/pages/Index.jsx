@@ -48,13 +48,20 @@ const Index = () => {
   const [clipLength, setClipLength] = useState(5000);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [startTime, setStartTime] = useState(0);
-  const [totalPlayTime, setTotalPlayTime] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   useEffect(() => {
     const { captions: parsedCaptions, clipLengthInSeconds } = parseUrlParams(searchParams);
     setCaptions(parsedCaptions);
     setClipLength(clipLengthInSeconds * 1000); // Convert to milliseconds
     selectRandomVideoAndTime();
+
+    // Start the elapsed time counter
+    const timer = setInterval(() => {
+      setElapsedTime(prevTime => prevTime + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, [searchParams]);
 
   const selectRandomVideoAndTime = () => {
@@ -66,14 +73,13 @@ const Index = () => {
     tempVideo.src = video;
     tempVideo.addEventListener('loadedmetadata', () => {
       const videoDuration = tempVideo.duration;
-      const maxStartTime = Math.max(0, videoDuration - clipLength / 1000-1);
+      const maxStartTime = Math.max(0, videoDuration - clipLength / 1000 - 1);
       const randomStartTime = Math.random() * maxStartTime;
       setStartTime(randomStartTime);
     });
   };
 
   const handleVideoEnd = () => {
-    setTotalPlayTime(prevTime => prevTime + clipLength);
     selectRandomVideoAndTime();
   };
 
@@ -84,7 +90,7 @@ const Index = () => {
           videoUrl={selectedVideo}
           captions={captions}
           clipLength={clipLength}
-          totalPlayTime={totalPlayTime}
+          elapsedTime={elapsedTime}
           onVideoEnd={handleVideoEnd}
           startTime={startTime}
         />

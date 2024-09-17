@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd, startTime }) => {
+const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, startTime }) => {
   const videoRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
 
@@ -8,16 +8,13 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
     const video = videoRef.current;
 
     const handleTimeUpdate = () => {
-      const timeElapsed = video.currentTime - startTime;
-      const currentTime = totalPlayTime + timeElapsed * 1000;
-      console.log(currentTime)
+      const currentTime = elapsedTime;
       const currentCaption = captions.find(
-        caption => (currentTime/1000) >= caption.startTime && (currentTime/1000) <= caption.endTime
+        caption => currentTime >= caption.startTime && currentTime <= caption.endTime
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
-      console.log("S", timeElapsed)
-      if ((timeElapsed * 1000 >= clipLength) || (timeElapsed < -0.5)) {
+      if (video.currentTime - startTime >= clipLength / 1000) {
         video.pause();
         onVideoEnd();
       }
@@ -30,12 +27,13 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('ended', onVideoEnd);
     };
-  }, [captions, clipLength, totalPlayTime, onVideoEnd]);
+  }, [captions, clipLength, elapsedTime, onVideoEnd, startTime]);
 
   useEffect(() => {
     const video = videoRef.current;
     video.load();
     video.currentTime = startTime;
+    video.play().catch(error => console.error("Error playing video:", error));
   }, [videoUrl, startTime]);
 
   return (
@@ -44,7 +42,6 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
         ref={videoRef}
         src={videoUrl}
         className="w-full h-full object-cover"
-        autoPlay
         muted
       />
       <div className="absolute bottom-10 left-0 right-0 text-center">
