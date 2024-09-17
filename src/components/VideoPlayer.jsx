@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength }) => {
+const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, onVideoEnd }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
@@ -10,58 +10,58 @@ const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength }) => {
     const audio = audioRef.current;
 
     const handleTimeUpdate = () => {
-      const currentTime = video.currentTime;
+      const currentTime = totalPlayTime + video.currentTime;
       const currentCaption = captions.find(
         caption => currentTime >= caption.startTime && currentTime <= caption.endTime
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
-      if (currentTime >= clipLength) {
+      if (video.currentTime >= clipLength) {
         video.pause();
         audio.pause();
+        onVideoEnd();
       }
     };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
-    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [captions, clipLength]);
+    video.addEventListener('ended', onVideoEnd);
 
-  const handlePlay = () => {
-    videoRef.current.play();
-    audioRef.current.play();
-  };
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('ended', onVideoEnd);
+    };
+  }, [captions, clipLength, totalPlayTime, onVideoEnd]);
 
-  const handlePause = () => {
-    videoRef.current.pause();
-    audioRef.current.pause();
-  };
+  useEffect(() => {
+    const video = videoRef.current;
+    const audio = audioRef.current;
+
+    video.load();
+    audio.load();
+
+    const playMedia = () => {
+      video.play().catch(error => console.error('Error playing video:', error));
+      audio.play().catch(error => console.error('Error playing audio:', error));
+    };
+
+    playMedia();
+  }, [videoUrl, audioUrl]);
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          className="w-full rounded-lg shadow-md"
-          controls
-        />
-        <audio ref={audioRef} src={audioUrl} />
+    <div className="relative w-full h-screen">
+      <video
+        ref={videoRef}
+        src={videoUrl}
+        className="w-full h-full object-cover"
+        autoPlay
+        muted
+      />
+      <audio ref={audioRef} src={audioUrl} />
+      <div className="absolute bottom-10 left-0 right-0 text-center">
+        <p className="text-white text-2xl font-bold bg-black bg-opacity-50 p-4 inline-block rounded">
+          {currentCaption}
+        </p>
       </div>
-      <div className="flex justify-center space-x-4">
-        <button
-          onClick={handlePlay}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-        >
-          Play
-        </button>
-        <button
-          onClick={handlePause}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-        >
-          Pause
-        </button>
-      </div>
-      <div className="text-center text-xl font-semibold">{currentCaption}</div>
     </div>
   );
 };

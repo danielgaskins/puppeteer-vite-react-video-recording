@@ -21,30 +21,39 @@ const Index = () => {
   const [clipLength, setClipLength] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [selectedMusic, setSelectedMusic] = useState('');
+  const [totalPlayTime, setTotalPlayTime] = useState(0);
 
   useEffect(() => {
     const { captions: parsedCaptions, clipLengthInSeconds } = parseUrlParams(searchParams);
     setCaptions(parsedCaptions);
     setClipLength(clipLengthInSeconds);
-    setSelectedVideo(getRandomItem(videoUrls));
-    setSelectedMusic(getRandomItem(musicUrls));
+    selectRandomMedia();
   }, [searchParams]);
 
+  const selectRandomMedia = () => {
+    setSelectedVideo(getRandomItem(videoUrls));
+    setSelectedMusic(getRandomItem(musicUrls));
+  };
+
+  const handleVideoEnd = () => {
+    setTotalPlayTime(prevTime => prevTime + clipLength);
+    selectRandomMedia();
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold mb-6 text-center">Video Player App</h1>
-        {selectedVideo && selectedMusic ? (
-          <VideoPlayer
-            videoUrl={selectedVideo}
-            audioUrl={selectedMusic}
-            captions={captions}
-            clipLength={clipLength}
-          />
-        ) : (
-          <p className="text-center text-gray-600">Loading...</p>
-        )}
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      {selectedVideo && selectedMusic ? (
+        <VideoPlayer
+          videoUrl={selectedVideo}
+          audioUrl={selectedMusic}
+          captions={captions}
+          clipLength={clipLength}
+          totalPlayTime={totalPlayTime}
+          onVideoEnd={handleVideoEnd}
+        />
+      ) : (
+        <p className="text-center text-white">Loading...</p>
+      )}
     </div>
   );
 };
