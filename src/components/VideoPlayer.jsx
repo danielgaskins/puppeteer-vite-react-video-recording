@@ -52,9 +52,10 @@ const VideoPlayer = ({ videoUrl, audioUrl, captions, clipLength, totalPlayTime, 
       <video
         ref={videoRef}
         src={videoUrl}
+        style={{maxHeight:"100%", maxWidth: "100%"}}
         className="w-full h-full object-cover"
         autoPlay
-        muted
+        muted="muted"
       />
       <audio ref={audioRef} src={audioUrl} />
       <div className="absolute bottom-10 left-0 right-0 text-center">
