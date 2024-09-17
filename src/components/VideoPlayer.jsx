@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ currentVideoUrl, nextVideoUrl, captions, clipLength, elapsedTime, onVideoEnd, startTime }) => {
-  const currentVideoRef = useRef(null);
-  const nextVideoRef = useRef(null);
+const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, startTime }) => {
+  const videoRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
 
   useEffect(() => {
-    const currentVideo = currentVideoRef.current;
-    const nextVideo = nextVideoRef.current;
+    const video = videoRef.current;
 
     const handleTimeUpdate = () => {
       const currentTime = elapsedTime;
@@ -16,43 +14,34 @@ const VideoPlayer = ({ currentVideoUrl, nextVideoUrl, captions, clipLength, elap
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
-      if (elapsedTime >= clipLength / 1000) {
-        currentVideo.pause();
+      if ((video.currentTime - startTime >= clipLength / 1000) || ((video.currentTime - startTime) < -0.5)) {
+        video.pause();
         onVideoEnd();
       }
     };
 
-    currentVideo.addEventListener('timeupdate', handleTimeUpdate);
-    currentVideo.addEventListener('ended', onVideoEnd);
-
-    // Preload the next video
-    nextVideo.src = nextVideoUrl;
-    nextVideo.load();
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('ended', onVideoEnd);
 
     return () => {
-      currentVideo.removeEventListener('timeupdate', handleTimeUpdate);
-      currentVideo.removeEventListener('ended', onVideoEnd);
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('ended', onVideoEnd);
     };
-  }, [captions, clipLength, elapsedTime, onVideoEnd, nextVideoUrl]);
+  }, [captions, clipLength, elapsedTime, onVideoEnd, startTime]);
 
   useEffect(() => {
-    const currentVideo = currentVideoRef.current;
-    currentVideo.load();
-    currentVideo.currentTime = startTime;
-    currentVideo.play().catch(error => console.error('Error playing video:', error));
-  }, [currentVideoUrl, startTime]);
+    const video = videoRef.current;
+    video.load();
+    video.currentTime = startTime;
+  }, [videoUrl, startTime]);
 
   return (
     <div className="relative w-full h-screen">
       <video
-        ref={currentVideoRef}
-        src={currentVideoUrl}
+        ref={videoRef}
+        src={videoUrl}
         className="w-full h-full object-cover"
-        muted
-      />
-      <video
-        ref={nextVideoRef}
-        className="hidden"
+        autoPlay
         muted
       />
       <div className="absolute bottom-10 left-0 right-0 text-center">
