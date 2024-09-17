@@ -47,22 +47,34 @@ const Index = () => {
   const [captions, setCaptions] = useState([]);
   const [clipLength, setClipLength] = useState(5000);
   const [selectedVideo, setSelectedVideo] = useState('');
+  const [startTime, setStartTime] = useState(0);
   const [totalPlayTime, setTotalPlayTime] = useState(0);
 
   useEffect(() => {
     const { captions: parsedCaptions, clipLengthInSeconds } = parseUrlParams(searchParams);
     setCaptions(parsedCaptions);
     setClipLength(clipLengthInSeconds * 1000); // Convert to milliseconds
-    selectRandomVideo();
+    selectRandomVideoAndTime();
   }, [searchParams]);
 
-  const selectRandomVideo = () => {
-    setSelectedVideo(getRandomItem(videoUrls));
+  const selectRandomVideoAndTime = () => {
+    const video = getRandomItem(videoUrls);
+    setSelectedVideo(video);
+
+    // Create a temporary video element to get the duration
+    const tempVideo = document.createElement('video');
+    tempVideo.src = video;
+    tempVideo.addEventListener('loadedmetadata', () => {
+      const videoDuration = tempVideo.duration;
+      const maxStartTime = Math.max(0, videoDuration - clipLength / 1000);
+      const randomStartTime = Math.random() * maxStartTime;
+      setStartTime(randomStartTime);
+    });
   };
 
   const handleVideoEnd = () => {
     setTotalPlayTime(prevTime => prevTime + clipLength);
-    selectRandomVideo();
+    selectRandomVideoAndTime();
   };
 
   return (
@@ -74,6 +86,7 @@ const Index = () => {
           clipLength={clipLength}
           totalPlayTime={totalPlayTime}
           onVideoEnd={handleVideoEnd}
+          startTime={startTime}
         />
       ) : (
         <p className="text-center text-white">Loading...</p>

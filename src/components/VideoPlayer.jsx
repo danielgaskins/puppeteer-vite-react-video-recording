@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd }) => {
+const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd, startTime }) => {
   const videoRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
 
@@ -32,8 +32,9 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
   useEffect(() => {
     const video = videoRef.current;
     video.load();
+    video.currentTime = startTime;
     video.play().catch(error => console.error('Error playing video:', error));
-  }, [videoUrl]);
+  }, [videoUrl, startTime]);
 
   return (
     <div className="relative w-full h-screen">
