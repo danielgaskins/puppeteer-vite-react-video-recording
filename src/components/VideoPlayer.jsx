@@ -14,20 +14,17 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
-      if ((startTime-video.currentTime) * 1000 >= clipLength) {
-        video.pause();
+      if (video.currentTime >= startTime + clipLength / 1000) {
         onVideoEnd();
       }
     };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('ended', onVideoEnd);
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('ended', onVideoEnd);
     };
-  }, [captions, clipLength, totalPlayTime, onVideoEnd]);
+  }, [captions, clipLength, totalPlayTime, onVideoEnd, startTime]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -44,6 +41,7 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
         className="w-full h-full object-cover"
         autoPlay
         muted
+        playsInline
       />
       <div className="absolute bottom-10 left-0 right-0 text-center">
         <p className="text-white text-2xl bg-black bg-opacity-50 p-2 inline-block">
