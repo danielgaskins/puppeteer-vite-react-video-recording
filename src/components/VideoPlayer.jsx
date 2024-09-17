@@ -33,7 +33,6 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
     const video = videoRef.current;
     video.load();
     video.currentTime = startTime;
-    video.play().catch(error => console.error("Error playing video:", error));
   }, [videoUrl, startTime]);
 
   return (
@@ -42,6 +41,7 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
         ref={videoRef}
         src={videoUrl}
         className="w-full h-full object-cover"
+        autoPlay
         muted
       />
       <div className="absolute bottom-10 left-0 right-0 text-center">
