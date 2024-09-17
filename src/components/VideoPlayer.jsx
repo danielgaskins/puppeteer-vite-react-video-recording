@@ -8,14 +8,16 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
     const video = videoRef.current;
 
     const handleTimeUpdate = () => {
-      console.log(totalPlayTime)
-      const currentTime = totalPlayTime + (video.currentTime -startTime) * 1000;
+      const timeElapsed = video.currentTime - startTime;
+      const currentTime = totalPlayTime + timeElapsed * 1000;
+      console.log(currentTime)
       const currentCaption = captions.find(
         caption => (currentTime/1000) >= caption.startTime && (currentTime/1000) <= caption.endTime
       );
       setCurrentCaption(currentCaption ? currentCaption.words.join(' ') : '');
 
-      if ((startTime-video.currentTime) * 1000 >= clipLength) {
+      console.log("S", timeElapsed)
+      if ((timeElapsed * 1000 >= clipLength) || (timeElapsed < -0.5)) {
         video.pause();
         onVideoEnd();
       }
@@ -34,7 +36,6 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, totalPlayTime, onVideoEnd
     const video = videoRef.current;
     video.load();
     video.currentTime = startTime;
-    video.play().catch(error => console.error('Error playing video:', error));
   }, [videoUrl, startTime]);
 
   return (

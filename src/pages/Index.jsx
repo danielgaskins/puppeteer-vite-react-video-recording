@@ -66,7 +66,7 @@ const Index = () => {
     tempVideo.src = video;
     tempVideo.addEventListener('loadedmetadata', () => {
       const videoDuration = tempVideo.duration;
-      const maxStartTime = Math.max(0, videoDuration - clipLength / 1000);
+      const maxStartTime = Math.max(0, videoDuration - clipLength / 1000-1);
       const randomStartTime = Math.random() * maxStartTime;
       setStartTime(randomStartTime);
     });
