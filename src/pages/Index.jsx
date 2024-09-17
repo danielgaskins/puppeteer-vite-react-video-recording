@@ -49,6 +49,7 @@ const Index = () => {
   const [selectedVideo, setSelectedVideo] = useState('');
   const [startTime, setStartTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [timeZero, setTimeZero] = useState(null);
 
   useEffect(() => {
     const { captions: parsedCaptions, clipLengthInSeconds } = parseUrlParams(searchParams);
@@ -83,6 +84,13 @@ const Index = () => {
     selectRandomVideoAndTime();
   };
 
+  const handleFirstPlay = (playTime) => {
+    if (timeZero === null) {
+      setTimeZero(playTime);
+      console.log('First video play time (time-zero):', playTime);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       {selectedVideo ? (
@@ -93,6 +101,8 @@ const Index = () => {
           elapsedTime={elapsedTime}
           onVideoEnd={handleVideoEnd}
           startTime={startTime}
+          onFirstPlay={handleFirstPlay}
+          timeZero={timeZero}
         />
       ) : (
         <p className="text-center text-white">Loading...</p>

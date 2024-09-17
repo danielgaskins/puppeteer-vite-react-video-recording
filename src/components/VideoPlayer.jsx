@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, startTime }) => {
+const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, startTime, onFirstPlay, timeZero }) => {
   const videoRef = useRef(null);
   const [currentCaption, setCurrentCaption] = useState('');
 
@@ -8,7 +8,9 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
     const video = videoRef.current;
 
     const handleTimeUpdate = () => {
-      const currentTime = elapsedTime;
+      if (timeZero === null) return;
+
+      const currentTime = Date.now() - timeZero;
       const currentCaption = captions.find(
         caption => currentTime >= caption.startTime && currentTime <= caption.endTime
       );
@@ -20,14 +22,22 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
       }
     };
 
+    const handlePlay = () => {
+      if (timeZero === null) {
+        onFirstPlay(Date.now());
+      }
+    };
+
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('ended', onVideoEnd);
+    video.addEventListener('play', handlePlay);
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('ended', onVideoEnd);
+      video.removeEventListener('play', handlePlay);
     };
-  }, [captions, clipLength, elapsedTime, onVideoEnd, startTime]);
+  }, [captions, clipLength, elapsedTime, onVideoEnd, startTime, onFirstPlay, timeZero]);
 
   useEffect(() => {
     const video = videoRef.current;
