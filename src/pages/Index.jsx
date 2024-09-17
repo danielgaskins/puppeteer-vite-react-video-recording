@@ -42,94 +42,38 @@ const videoUrls = [
 "videos/8928582-uhd_3840_2160_25fps.mp4"
 ];
 
-const musicUrls = [
- "music/mixkit-1980-290.mp3", 
- "music/mixkit-ambient-251.mp3", 
- "music/mixkit-angel-on-earth-865.mp3", 
- "music/mixkit-discover-587.mp3", 
- "music/mixkit-dont-leave-me-tonight-1058.mp3", 
- "music/mixkit-dreaming-of-you-952.mp3", 
- "music/mixkit-feedback-dreams-588.mp3", 
- "music/mixkit-finding-myself-993.mp3", 
- "music/mixkit-forest-treasure-138.mp3", 
- "music/mixkit-harp-relax-669.mp3", 
- "music/mixkit-kodama-night-town-114.mp3", 
- "music/mixkit-loving-you-is-easy-1006.mp3", 
- "music/mixkit-meditation-441.mp3", 
- "music/mixkit-my-little-star-1037.mp3", 
- "music/mixkit-nature-meditation-345.mp3", 
- "music/mixkit-nature-yoga-442.mp3", 
- "music/mixkit-recline-and-chill-25.mp3", 
- "music/mixkit-relax-658.mp3", 
- "music/mixkit-relaxation-02-746.mp3", 
- "music/mixkit-relaxation-03-747.mp3", 
- "music/mixkit-relaxation-05-749.mp3", 
- "music/mixkit-relaxation-06-748.mp3", 
- "music/mixkit-relaxation-meditation-365.mp3", 
- "music/mixkit-relax-beat-292.mp3", 
- "music/mixkit-rest-now-584.mp3", 
- "music/mixkit-serene-view-443.mp3", 
- "music/mixkit-slow-rain-122.mp3", 
- "music/mixkit-smooth-meditation-324.mp3", 
- "music/mixkit-sonor-07-585.mp3", 
- "music/mixkit-spirit-in-the-woods-2-147.mp3", 
- "music/mixkit-spirit-in-the-woods-139.mp3", 
- "music/mixkit-spiritual-moment-525.mp3", 
- "music/mixkit-staring-at-the-night-sky-168.mp3", 
- "music/mixkit-transcending-347.mp3", 
- "music/mixkit-unforgiven-890.mp3", 
- "music/mixkit-valley-sunset-127.mp3", 
- "music/mixkit-voxscape-571.mp3", 
- "music/mixkit-yoga-music-04-386.mp3", 
- "music/mixkit-yoga-song-444.mp3", 
- "music/mixkit-yoga-tune-325.mp3"
-];
-
 const Index = () => {
   const [searchParams] = useSearchParams();
   const [captions, setCaptions] = useState([]);
   const [clipLength, setClipLength] = useState(5000);
   const [selectedVideo, setSelectedVideo] = useState('');
-  const [selectedMusic, setSelectedMusic] = useState('');
   const [totalPlayTime, setTotalPlayTime] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const { captions: parsedCaptions, clipLengthInSeconds } = parseUrlParams(searchParams);
     setCaptions(parsedCaptions);
-    setClipLength(clipLengthInSeconds);
-    selectRandomMedia();
+    setClipLength(clipLengthInSeconds * 1000); // Convert to milliseconds
+    selectRandomVideo();
   }, [searchParams]);
 
-  const selectRandomMedia = () => {
+  const selectRandomVideo = () => {
     setSelectedVideo(getRandomItem(videoUrls));
   };
 
   const handleVideoEnd = () => {
     setTotalPlayTime(prevTime => prevTime + clipLength);
-    selectRandomMedia();
-  };
-
-  const handleScreenClick = () => {
-    if (!isPlaying) {
-      setIsPlaying(true);
-    }
+    selectRandomVideo();
   };
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center bg-black cursor-pointer"
-      onClick={handleScreenClick}
-    >
-      {selectedVideo && selectedMusic ? (
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      {selectedVideo ? (
         <VideoPlayer
           videoUrl={selectedVideo}
-          audioUrl={selectedMusic}
           captions={captions}
           clipLength={clipLength}
           totalPlayTime={totalPlayTime}
           onVideoEnd={handleVideoEnd}
-          isPlaying={isPlaying}
         />
       ) : (
         <p className="text-center text-white">Loading...</p>
