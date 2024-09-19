@@ -4,12 +4,20 @@ This project is a Vite React app that randomly loads hardcoded videos from a loc
 
 **Note:** This project is set up to emulate an iPhone 15 for recording. You can change the emulated device in `recordVideo.ts`.
 
+**Note:** Without an videos prepared ahead of time, this will not work. You will need to download video and put it into the public folder, and then hardcode the paths to said video in src/pages/index.jsx as videoUrls: string[].
+
 ### Features
 
 - Randomly selects and plays videos from a local server.
 - Displays captions based on data passed through URL parameters.
 - Uses Puppeteer to record the screen, capturing both video and captions.
 - Employs ffmpeg for video post-processing, including removing the first second and adding audio.
+
+### Demo
+
+Here's a quick demonstration of the app in action:
+
+![Demo GIF](./demo.gif)
 
 ### Prerequisites
 
@@ -21,11 +29,11 @@ This project is a Vite React app that randomly loads hardcoded videos from a loc
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/danielgaskins/puppeteer-vite-react-video-recording
    ```
 2. Navigate to the project directory:
    ```bash
-   cd <project-directory>
+   cd puppeteer-vite-react-video-recording
    ```
 3. Install the dependencies:
    ```bash
@@ -38,13 +46,13 @@ This project is a Vite React app that randomly loads hardcoded videos from a loc
    ```bash
    npm run dev
    ```
-   This will start the Vite development server, typically at `http://localhost:5173/`.
+   This will start the Vite development server, typically at `http://localhost:8080/`.
 
 2. **Open a new terminal and run the recording script:**
    ```bash
    npm run record
    ```
-   This will execute the `recordVideo.ts` script.
+   This will execute the `recordVideo.cjs` script.
 
 3. **Provide captions via URL parameters:**
    - When the app loads in the browser, provide the captions as a JSON-encoded string in the `captions` URL parameter. 
@@ -55,7 +63,7 @@ This project is a Vite React app that randomly loads hardcoded videos from a loc
 
 ### Configuration
 
-You can customize the recording settings in the `Config` object within `recordVideo.ts`. This includes:
+You can customize the recording settings in the `Config` object within `recordVideo.cjs`. This includes:
 
 - `device`: Emulated device for recording.
 - `fps`: Frames per second for the recording.
