@@ -10,7 +10,7 @@ const VideoPlayer = ({ videoUrl, captions, clipLength, elapsedTime, onVideoEnd, 
     const handleTimeUpdate = () => {
       if (timeZero === null) return;
 
-      const currentTime = Date.now() - timeZero;
+      const currentTime = (Date.now() - timeZero)/1000;
       const currentCaption = captions.find(
         caption => currentTime >= caption.startTime && currentTime <= caption.endTime
       );

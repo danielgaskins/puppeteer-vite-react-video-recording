@@ -1,70 +1,72 @@
-# Welcome to your GPT Engineer project
+## Vite React Video Recorder
 
-## Project info
+This project is a Vite React app that randomly loads hardcoded videos from a local server and plays captions delivered to it via URL parameters. Puppeteer is then used to record the video along with the HTML captioning.
 
-**URL**: https://run.gptengineer.app/projects/6a424516-4f56-40a1-a195-3b035985879d/improve
+**Note:** This project is set up to emulate an iPhone 15 for recording. You can change the emulated device in `recordVideo.ts`.
 
-## How can I edit this code?
+### Features
 
-There are several ways of editing your application.
+- Randomly selects and plays videos from a local server.
+- Displays captions based on data passed through URL parameters.
+- Uses Puppeteer to record the screen, capturing both video and captions.
+- Employs ffmpeg for video post-processing, including removing the first second and adding audio.
 
-**Use GPT Engineer**
+### Prerequisites
 
-Simply visit the GPT Engineer project at [GPT Engineer](https://gptengineer.app/projects/6a424516-4f56-40a1-a195-3b035985879d/improve) and start prompting.
+- Node.js and npm (or yarn)
+- Google Chrome (installed and in your PATH)
+- ffmpeg (installed and in your PATH)
 
-Changes made via gptengineer.app will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd <project-directory>
+   ```
+3. Install the dependencies:
+   ```bash
+   npm install
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in the GPT Engineer UI.
+### Usage
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   This will start the Vite development server, typically at `http://localhost:5173/`.
 
-Follow these steps:
+2. **Open a new terminal and run the recording script:**
+   ```bash
+   npm run record
+   ```
+   This will execute the `recordVideo.ts` script.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3. **Provide captions via URL parameters:**
+   - When the app loads in the browser, provide the captions as a JSON-encoded string in the `captions` URL parameter. 
+   - Each caption object should have `word`, `startTime`, and `endTime` properties.
+   - Example URL: `http://localhost:5173/?captions=[{"word": "Hello", "startTime": 0, "endTime": 1}, {"word": "world", "startTime": 1, "endTime": 2}]`
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+4. **The recording will start automatically** and save the output video file to the `./videos` directory.
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Configuration
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+You can customize the recording settings in the `Config` object within `recordVideo.ts`. This includes:
 
-**Edit a file directly in GitHub**
+- `device`: Emulated device for recording.
+- `fps`: Frames per second for the recording.
+- `ffmpeg_Path`: Path to the ffmpeg executable (if not in PATH).
+- `videoFrame`: Dimensions of the recorded video.
+- `videoCrf`: Video quality (lower value means higher quality).
+- `videoCodec`: Video codec to use.
+- `videoPreset`: Encoding speed preset.
+- `videoBitrate`: Target video bitrate.
+- `aspectRatio`: Aspect ratio of the output video.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### License
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-All GPT Engineer projects can be deployed directly via the GPT Engineer app.
-
-Simply visit your project at [GPT Engineer](https://gptengineer.app/projects/6a424516-4f56-40a1-a195-3b035985879d/improve) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.gptengineer.app/tips-tricks/custom-domain/)
+MIT
