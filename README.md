@@ -38,7 +38,7 @@ This project is a Vite React app that randomly loads hardcoded videos from a loc
    ```bash
    npm run dev
    ```
-   This will start the Vite development server, typically at `http://localhost:5173/`.
+   This will start the Vite development server, typically at `http://localhost:8080/`.
 
 2. **Open a new terminal and run the recording script:**
    ```bash
